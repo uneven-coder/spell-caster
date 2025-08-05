@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77b01fc7ee04d1942a7b4795c36686c0, type: 3}
+  m_Name: fireball
+  m_EditorClassIdentifier: 
+  spellName: fireball
+  modifiers:
+  - modifierInstance:
+      rid: 7562379459950542848
+  - modifierInstance:
+      rid: 7562379508661878784
+  - modifierInstance:
+      rid: 7562379516427632640
+  references:
+    version: 2
+    RefIds:
+    - rid: 7562379459950542848
+      type: {class: projectile, ns: , asm: Assembly-CSharp}
+      data:
+        onCastListenEventType: 0
+        onActionListenEventType: 1
+        onCast:
+          m_PersistentCalls:
+            m_Calls: []
+        onCastEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        onAction:
+          m_PersistentCalls:
+            m_Calls: []
+        onActionEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        _hasRefrence: 0
+        _previousSelectedIndex: -1
+        speed: 13
+        projectileObject: {fileID: 0}
+    - rid: 7562379508661878784
+      type: {class: colider, ns: , asm: Assembly-CSharp}
+      data:
+        onCastListenEventType: 0
+        onActionListenEventType: 1
+        onCast:
+          m_PersistentCalls:
+            m_Calls: []
+        onCastEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        onAction:
+          m_PersistentCalls:
+            m_Calls: []
+        onActionEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        _hasRefrence: 1
+        _previousSelectedIndex: 0
+    - rid: 7562379516427632640
+      type: {class: log, ns: , asm: Assembly-CSharp}
+      data:
+        onCastListenEventType: 0
+        onActionListenEventType: 1
+        onCast:
+          m_PersistentCalls:
+            m_Calls: []
+        onCastEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        onAction:
+          m_PersistentCalls:
+            m_Calls: []
+        onActionEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        _hasRefrence: 1
+        _previousSelectedIndex: -1
+        useCastMessge: 0
+        CastMessage: Log Cast Triggered
+        useEventMessage: 1
+        EventMessage: Colider added
+        ActionMessage: Colider hit an object
