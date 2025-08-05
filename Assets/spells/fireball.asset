@@ -19,7 +19,9 @@ MonoBehaviour:
   - modifierInstance:
       rid: 7562379508661878784
   - modifierInstance:
-      rid: 7562379516427632640
+      rid: 7562379530245767168
+  - modifierInstance:
+      rid: 7562379530245767169
   references:
     version: 2
     RefIds:
@@ -63,8 +65,8 @@ MonoBehaviour:
             m_Calls: []
         _hasRefrence: 1
         _previousSelectedIndex: 0
-    - rid: 7562379516427632640
-      type: {class: log, ns: , asm: Assembly-CSharp}
+    - rid: 7562379530245767168
+      type: {class: destroy, ns: , asm: Assembly-CSharp}
       data:
         onCastListenEventType: 0
         onActionListenEventType: 1
@@ -81,9 +83,28 @@ MonoBehaviour:
           m_PersistentCalls:
             m_Calls: []
         _hasRefrence: 1
+        _previousSelectedIndex: 0
+        destroyOnEvent: 0
+        destroyByTimer: 1
+        destroyDelay: 12
+        _gameObject: {fileID: 0}
+    - rid: 7562379530245767169
+      type: {class: particleSystem, ns: , asm: Assembly-CSharp}
+      data:
+        onCastListenEventType: 0
+        onActionListenEventType: 1
+        onCast:
+          m_PersistentCalls:
+            m_Calls: []
+        onCastEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        onAction:
+          m_PersistentCalls:
+            m_Calls: []
+        onActionEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        _hasRefrence: 0
         _previousSelectedIndex: -1
-        useCastMessge: 0
-        CastMessage: Log Cast Triggered
-        useEventMessage: 1
-        EventMessage: Colider added
-        ActionMessage: Colider hit an object
+        randomMax: 2
