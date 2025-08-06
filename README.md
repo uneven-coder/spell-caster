@@ -6,6 +6,13 @@ This template shows how to use the event system (`OnCast`, `OnAction`, `OnEvent`
 
 This ReadMe will also go over thread safe spell management, its important to understand the gameobject management, the spells will use this a lot and being able to get the gameobjects and other data from another spell will be very helpfull and using the thread safe gameobject system will make it a lot easier.
 
+## Examples and game Showcase
+
+Heres a example showing how the Events work, this is a simple fireball having a projectile with a persistant particle trail and then 2 on colide particle that spawn a blast radius and explosion effect at the hit location.
+The left shows the order of events showing the OnCasts and then arrows signifying the reference type and reference target.
+<img width="1059" height="596" alt="image" src="https://github.com/user-attachments/assets/e7a6d04f-b9c0-48b4-987c-b93746a1d624" />
+
+
 ### How It Works
 
 #### Core Concepts
