@@ -18,6 +18,10 @@ MonoBehaviour:
       rid: 7562379459950542848
   - modifierInstance:
       rid: 7562379508661878784
+  - modifierInstance:
+      rid: 7562379554710355969
+  - modifierInstance:
+      rid: 7562379554710355970
   references:
     version: 2
     RefIds:
@@ -47,13 +51,12 @@ MonoBehaviour:
             m_Calls: []
         _hasRefrence: 0
         _previousSelectedIndex: -1
-        speed: 9
-        projectileObject: {fileID: 0}
+        speed: 11
     - rid: 7562379508661878784
       type: {class: colider, ns: , asm: Assembly-CSharp}
       data:
         _useReference: 0
-        selectedModifierIndex: -1
+        selectedModifierIndex: 0
         selectedModifierIndex2: -1
         onCastListenEventType: 0
         onActionListenEventType: 1
@@ -74,5 +77,61 @@ MonoBehaviour:
           m_PersistentCalls:
             m_Calls: []
         _hasRefrence: 1
-        _previousSelectedIndex: -1
-        _ColideGameObject: {fileID: 0}
+        _previousSelectedIndex: 0
+    - rid: 7562379554710355969
+      type: {class: particle, ns: , asm: Assembly-CSharp}
+      data:
+        _useReference: 0
+        selectedModifierIndex: 0
+        selectedModifierIndex2: 1
+        onCastListenEventType: 0
+        onActionListenEventType: 1
+        castReferenceLabel: 'Listen for OnCast Event from:'
+        actionReferenceLabel: 'Listen for OnAction Event from:'
+        showCastReferenceSelector: 1
+        showActionReferenceSelector: 1
+        onCast:
+          m_PersistentCalls:
+            m_Calls: []
+        onCastEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        onAction:
+          m_PersistentCalls:
+            m_Calls: []
+        onActionEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        _hasRefrence: 1
+        _previousSelectedIndex: 0
+        _particleSystem: {fileID: 770385092100141734, guid: 0e0e093fb7072d444be51286faf6a8e3, type: 3}
+        useActionOnly: 1
+    - rid: 7562379554710355970
+      type: {class: destroy, ns: , asm: Assembly-CSharp}
+      data:
+        _useReference: 0
+        selectedModifierIndex: 0
+        selectedModifierIndex2: 1
+        onCastListenEventType: 0
+        onActionListenEventType: 1
+        castReferenceLabel: 'Listen for OnCast Event from:'
+        actionReferenceLabel: 'Listen for OnAction Event from:'
+        showCastReferenceSelector: 1
+        showActionReferenceSelector: 1
+        onCast:
+          m_PersistentCalls:
+            m_Calls: []
+        onCastEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        onAction:
+          m_PersistentCalls:
+            m_Calls: []
+        onActionEvent:
+          m_PersistentCalls:
+            m_Calls: []
+        _hasRefrence: 1
+        _previousSelectedIndex: 0
+        destroyOnEvent: 1
+        destroyByTimer: 1
+        destroyDelay: 56

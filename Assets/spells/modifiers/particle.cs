@@ -75,8 +75,8 @@ public class particle : SpellModifier
                 particleSystemObject.transform.position = targetPos;
                 _gameObject = particleSystemObject;
                 OnAction(caster, onAction(_particleSystem, particleSystemObject));
-                float duration = _particleSystem != null ? _particleSystem.main.duration : 5f;
-                UnityEngine.Object.Destroy(particleSystemObject, duration >= 2f ? duration : 5f);
+                float duration = _particleSystem != null ? _particleSystem.main.duration : 12f;
+                UnityEngine.Object.Destroy(particleSystemObject, duration >= 2f ? duration : 12f);
             }
             catch (System.Exception e)
             {

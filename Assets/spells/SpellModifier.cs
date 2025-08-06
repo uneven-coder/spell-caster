@@ -256,6 +256,30 @@ public abstract class SpellModifier
         OnEvent(caster, spellEvent, SpellEventType.OnCast);
         onCastEvent.Invoke(); // This will trigger any subscribers
     }
+
+    public virtual string GetDebugInfo(Spell parentSpell)
+    {   // Returns debug information about this modifier for visualization
+        string typeName = GetType().Name;
+        string info = typeName;
+        
+        // Add reference information if using references
+        if (UseReference && parentSpell != null)
+        {
+            if (selectedModifierIndex >= 0 && selectedModifierIndex < parentSpell.modifiers.Count)
+            {
+                string refType = onCastListenEventType == 0 ? "OnCast" : "OnAction";
+                info += $"\n→ References [{refType}]: {parentSpell.modifiers[selectedModifierIndex].ModifierTypeName}";
+            }
+            
+            if (selectedModifierIndex2 >= 0 && selectedModifierIndex2 < parentSpell.modifiers.Count)
+            {
+                string refType = onActionListenEventType == 0 ? "OnCast" : "OnAction";
+                info += $"\n→ References [{refType}]: {parentSpell.modifiers[selectedModifierIndex2].ModifierTypeName}";
+            }
+        }
+        
+        return info;
+    }
 }
 
 
