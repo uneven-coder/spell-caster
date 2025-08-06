@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -11,7 +12,23 @@ public class particle : SpellModifier
     // create a particle sytstem on cast event
 
     public ParticleSystem _particleSystem;
-    public GameObject _gameObject;
+    
+    [NonSerialized]
+    private Dictionary<int, GameObject> gameObjectInstances = new Dictionary<int, GameObject>();
+    
+    public GameObject _gameObject
+    {   // Thread-local reference to avoid mixing between spell casts
+        get 
+        {
+            int instanceId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            return gameObjectInstances.ContainsKey(instanceId) ? gameObjectInstances[instanceId] : null;
+        }
+        private set 
+        {
+            int instanceId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            gameObjectInstances[instanceId] = value;
+        }
+    }
 
     public override bool UseReference => true;
     public override string CastReferenceLabel => "Object to attach Particle System";
@@ -26,20 +43,45 @@ public class particle : SpellModifier
     {
         if (eventType == SpellEventType.OnCast)
         {   // attach the particle system to the caster
-            _gameObject = ModifierUtils.GetGameObject(this, SpellEventType.OnCast, typeof(projectile));
-            if (!useActionOnly)
-                OnAction(caster, onAction(_particleSystem, _gameObject));
+            GameObject sourceObject = ModifierUtils.GetGameObject(this, SpellEventType.OnCast, typeof(projectile));
+            if (sourceObject != null && !useActionOnly && _particleSystem != null)
+            {
+                _gameObject = sourceObject; // Store reference to source object
+                OnAction(caster, onAction(_particleSystem, sourceObject));
+            }
         }
         else if (eventType == SpellEventType.OnAction && useActionOnly)
         {   // create the particle system at the location of the action
             Debug.Log("Particle system action triggered.");
-            _gameObject = ModifierUtils.GetGameObject(this, SpellEventType.OnCast, typeof(projectile));
-            Vector3 _targetPos = _gameObject.transform.position;
-            _gameObject = new GameObject("ParticleSystemObject");
-            _gameObject.transform.position = _targetPos;
-            OnAction(caster, onAction(_particleSystem, _gameObject));
-            UnityEngine.Object.Destroy(_gameObject, _particleSystem.main.duration >= 24f ? _particleSystem.main.duration : 24f);
-
+            GameObject sourceObject = ModifierUtils.GetGameObject(this, SpellEventType.OnAction, typeof(colider));
+            
+            // Early exit if any reference is null
+            if (sourceObject == null)
+            {
+                Debug.LogWarning("Particle system: Source object is null");
+                return;
+            }
+            
+            if (_particleSystem == null)
+            {
+                Debug.LogWarning("Particle system: No particle system assigned");
+                return;
+            }
+            
+            try
+            {
+                Vector3 targetPos = sourceObject.transform.position;
+                GameObject particleSystemObject = new GameObject("ParticleSystemObject");
+                particleSystemObject.transform.position = targetPos;
+                _gameObject = particleSystemObject;
+                OnAction(caster, onAction(_particleSystem, particleSystemObject));
+                float duration = _particleSystem != null ? _particleSystem.main.duration : 5f;
+                UnityEngine.Object.Destroy(particleSystemObject, duration >= 2f ? duration : 5f);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error creating particle system: {e.Message}");
+            }
         }
     }
 

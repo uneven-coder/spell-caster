@@ -18,18 +18,21 @@ MonoBehaviour:
       rid: 7562379459950542848
   - modifierInstance:
       rid: 7562379508661878784
-  - modifierInstance:
-      rid: 7562379536868048898
-  - modifierInstance:
-      rid: 7562379536868048899
   references:
     version: 2
     RefIds:
     - rid: 7562379459950542848
       type: {class: projectile, ns: , asm: Assembly-CSharp}
       data:
+        _useReference: 0
+        selectedModifierIndex: -1
+        selectedModifierIndex2: -1
         onCastListenEventType: 0
         onActionListenEventType: 1
+        castReferenceLabel: 'Listen for OnCast Event from:'
+        actionReferenceLabel: 'Listen for OnAction Event from:'
+        showCastReferenceSelector: 1
+        showActionReferenceSelector: 1
         onCast:
           m_PersistentCalls:
             m_Calls: []
@@ -49,8 +52,15 @@ MonoBehaviour:
     - rid: 7562379508661878784
       type: {class: colider, ns: , asm: Assembly-CSharp}
       data:
+        _useReference: 0
+        selectedModifierIndex: -1
+        selectedModifierIndex2: -1
         onCastListenEventType: 0
         onActionListenEventType: 1
+        castReferenceLabel: 'Listen for OnCast Event from:'
+        actionReferenceLabel: 'Listen for OnAction Event from:'
+        showCastReferenceSelector: 1
+        showActionReferenceSelector: 1
         onCast:
           m_PersistentCalls:
             m_Calls: []
@@ -64,50 +74,5 @@ MonoBehaviour:
           m_PersistentCalls:
             m_Calls: []
         _hasRefrence: 1
-        _previousSelectedIndex: 0
+        _previousSelectedIndex: -1
         _ColideGameObject: {fileID: 0}
-    - rid: 7562379536868048898
-      type: {class: particle, ns: , asm: Assembly-CSharp}
-      data:
-        onCastListenEventType: 0
-        onActionListenEventType: 1
-        onCast:
-          m_PersistentCalls:
-            m_Calls: []
-        onCastEvent:
-          m_PersistentCalls:
-            m_Calls: []
-        onAction:
-          m_PersistentCalls:
-            m_Calls: []
-        onActionEvent:
-          m_PersistentCalls:
-            m_Calls: []
-        _hasRefrence: 1
-        _previousSelectedIndex: 0
-        _particleSystem: {fileID: 770385092100141734, guid: c770a73128e12b045becb22e09012b1e, type: 3}
-        _gameObject: {fileID: 0}
-        useActionOnly: 1
-    - rid: 7562379536868048899
-      type: {class: destroy, ns: , asm: Assembly-CSharp}
-      data:
-        onCastListenEventType: 0
-        onActionListenEventType: 1
-        onCast:
-          m_PersistentCalls:
-            m_Calls: []
-        onCastEvent:
-          m_PersistentCalls:
-            m_Calls: []
-        onAction:
-          m_PersistentCalls:
-            m_Calls: []
-        onActionEvent:
-          m_PersistentCalls:
-            m_Calls: []
-        _hasRefrence: 1
-        _previousSelectedIndex: 0
-        destroyOnEvent: 0
-        destroyByTimer: 1
-        destroyDelay: 100
-        _gameObject: {fileID: 0}

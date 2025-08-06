@@ -19,38 +19,38 @@ public enum SpellEventType
 [Serializable]
 public abstract class SpellModifier
 {
-    private bool _useReference = false;
+    [SerializeField, HideInInspector] private bool _useReference = false;
     public virtual bool UseReference
     {
         get => _useReference;
         set => _useReference = value;
     }
 
-    private int selectedModifierIndex = -1;
+    [SerializeField, HideInInspector] private int selectedModifierIndex = -1;
     public int SelectedModifierIndex
     {
         get => selectedModifierIndex;
         set => selectedModifierIndex = value;
     }
 
-    private int selectedModifierIndex2 = -1;
+    [SerializeField, HideInInspector] private int selectedModifierIndex2 = -1;
     public int SelectedModifierIndex2
     {
         get => selectedModifierIndex2;
         set => selectedModifierIndex2 = value;
     }
 
-    [HideInInspector] public int onCastListenEventType = 0; // 0 = OnCast, 1 = OnAction (for first reference)
-    [HideInInspector] public int onActionListenEventType = 1; // 0 = OnCast, 1 = OnAction (default to OnAction for second reference)
+    [SerializeField, HideInInspector] public int onCastListenEventType = 0; // 0 = OnCast, 1 = OnAction (for first reference)
+    [SerializeField, HideInInspector] public int onActionListenEventType = 1; // 0 = OnCast, 1 = OnAction (default to OnAction for second reference)
 
     // Customizable labels for modifier reference dropdowns
-    [HideInInspector] private string castReferenceLabel = "Listen for OnCast Event from:";   // Label for the cast reference dropdown
-    [HideInInspector] private string actionReferenceLabel = "Listen for OnAction Event from:"; // Label for the action reference dropdown
+    [SerializeField, HideInInspector] private string castReferenceLabel = "Listen for OnCast Event from:";   // Label for the cast reference dropdown
+    [SerializeField, HideInInspector] private string actionReferenceLabel = "Listen for OnAction Event from:"; // Label for the action reference dropdown
     public virtual string CastReferenceLabel => castReferenceLabel;
     public virtual string ActionReferenceLabel => actionReferenceLabel;
 
-    [HideInInspector] private bool showCastReferenceSelector = true;   // Show the cast reference dropdown?
-    [HideInInspector] private bool showActionReferenceSelector = true; // Show the action reference dropdown?
+    [SerializeField, HideInInspector] private bool showCastReferenceSelector = true;   // Show the cast reference dropdown?
+    [SerializeField, HideInInspector] private bool showActionReferenceSelector = true; // Show the action reference dropdown?
     public virtual bool ShowCastReferenceSelector => showCastReferenceSelector;
     public virtual bool ShowActionReferenceSelector => showActionReferenceSelector;
 
@@ -79,10 +79,10 @@ public abstract class SpellModifier
     [HideInInspector] public UnityEvent onAction = new UnityEvent();
     [HideInInspector] public UnityEvent onActionEvent = new UnityEvent();
 
-    [HideInInspector] public bool _hasRefrence = false;
-    public SpellModifier _subscribedCastModifier = null;
-    public SpellModifier _subscribedActionModifier = null;
-    [HideInInspector] public int _previousSelectedIndex = -1;
+    [SerializeField, HideInInspector] public bool _hasRefrence = false;
+    [System.NonSerialized] public SpellModifier _subscribedCastModifier = null;
+    [System.NonSerialized] public SpellModifier _subscribedActionModifier = null;
+    [SerializeField, HideInInspector] public int _previousSelectedIndex = -1;
 
     // Track whether this modifier is set up with its references
 
@@ -131,6 +131,7 @@ public abstract class SpellModifier
             return;
 
         // Subscribe to the referenced modifier with the appropriate listen type
+        // indexType: 0 = OnCast, 1 = OnAction
         SubscribeToModifier(referencedModifier, indexType);
     }
 
@@ -144,10 +145,10 @@ public abstract class SpellModifier
     }
 
     // Store our callbacks as instance fields so we can remove them properly
-    private UnityAction _onCastCallback;
-    private UnityAction _onCastEventCallback;
-    private UnityAction _onActionCallback;
-    private UnityAction _onActionEventCallback;
+    [System.NonSerialized] private UnityAction _onCastCallback;
+    [System.NonSerialized] private UnityAction _onCastEventCallback;
+    [System.NonSerialized] private UnityAction _onActionCallback;
+    [System.NonSerialized] private UnityAction _onActionEventCallback;
 
     private void SubscribeToModifier(SpellModifier modifier, int whichListenType)
     {   // Subscribe to the events of the referenced modifier for a specific listenType
@@ -155,9 +156,15 @@ public abstract class SpellModifier
 
         // Store reference in appropriate field based on listen type
         if (whichListenType == 0)
+        {
             _subscribedCastModifier = modifier;
+            _hasRefrence = true;
+        }
         else
+        {
             _subscribedActionModifier = modifier;
+            _hasRefrence = true;
+        }
 
         // Create event callbacks with appropriate event types
         SpellEventType eventType = whichListenType == 0 ? SpellEventType.OnCast : SpellEventType.OnAction;

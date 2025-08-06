@@ -32,6 +32,11 @@ public class SpellCaster : MonoBehaviour
         SubscribeAllModifiers();
     }
     
+    private void OnValidate()
+    {   // Re-subscribe when changes are made in the editor
+        SubscribeAllModifiers();
+    }
+    
     private void SubscribeAllModifiers()
     {   // Ensure all referenced modifiers are subscribed
         if (spellSelections == null) return;

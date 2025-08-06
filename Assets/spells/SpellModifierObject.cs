@@ -231,18 +231,22 @@ public class SpellModifierObjectDrawer : PropertyDrawer
                                             propertyInfo.SetValue(modRef, newSelectedIndex);
                                     }
                                     
-                                    // Check for listen type property
-                                    if (propertyName.Contains("2"))
+                                    // Only set the default listen type if it's a new reference
+                                    if (newSelectedIndex >= 0 && currentIndex < 0)
                                     {
-                                        var listenTypeProp = modInst.FindPropertyRelative("onActionListenEventType");
-                                        if (listenTypeProp != null)
-                                            listenTypeProp.intValue = 1; // Default to OnAction for second reference
-                                    }
-                                    else
-                                    {
-                                        var listenTypeProp = modInst.FindPropertyRelative("onCastListenEventType");
-                                        if (listenTypeProp != null)
-                                            listenTypeProp.intValue = 0; // Default to OnCast for first reference
+                                        // Check for listen type property and set default if needed
+                                        if (propertyName.Contains("2"))
+                                        {
+                                            var listenTypeProp = modInst.FindPropertyRelative("onActionListenEventType");
+                                            if (listenTypeProp != null)
+                                                listenTypeProp.intValue = 1; // Default to OnAction for second reference
+                                        }
+                                        else
+                                        {
+                                            var listenTypeProp = modInst.FindPropertyRelative("onCastListenEventType");
+                                            if (listenTypeProp != null)
+                                                listenTypeProp.intValue = 0; // Default to OnCast for first reference
+                                        }
                                     }
                                     
                                     // Initialize references if spell exists
@@ -324,6 +328,8 @@ public class SpellModifierObjectDrawer : PropertyDrawer
                 if (currentSpell != null && currentSpell.modifiers.Count > 1)
                 {
                     // Add height only for visible reference dropdowns
+                    bool hasCastReference = modifierRef.SelectedModifierIndex >= 0 && modifierRef.ShowCastReferenceSelector;
+                    bool hasActionReference = modifierRef.SelectedModifierIndex2 >= 0 && modifierRef.ShowActionReferenceSelector;
                     
                     // First reference (cast reference): label + dropdown if visible
                     if (modifierRef.ShowCastReferenceSelector)
