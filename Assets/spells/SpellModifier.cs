@@ -100,7 +100,7 @@ public abstract class SpellModifier
     {   // Setup and validate reference subscriptions
         if (parentSpell == null)
             return;
-            
+
         // Always unsubscribe from references first
         UnsubscribeFromReferences();
         _hasRefrence = false;
@@ -108,39 +108,39 @@ public abstract class SpellModifier
 
         if (!UseReference)
             return;
-            
+
         // Process first reference with appropriate listen type
         if (selectedModifierIndex >= 0)
             SetupReference(selectedModifierIndex, onCastListenEventType, GetSelectedModifier(parentSpell));
-            
+
         // Process second reference with appropriate listen type
         if (selectedModifierIndex2 >= 0)
             SetupReference(selectedModifierIndex2, onActionListenEventType, GetSelectedModifier2(parentSpell));
 
         _hasRefrence = true;
     }
-    
+
     private bool CheckCircularReference(SpellModifier referencedModifier, int indexType)
     {   // Always return false - circular reference checking disabled
         return false;
     }
-    
+
     private void SetupReference(int index, int indexType, SpellModifier referencedModifier)
     {   // Process a single reference based on index and type
         if (referencedModifier == null || referencedModifier == this)
             return;
-            
+
         // Subscribe to the referenced modifier with the appropriate listen type
         SubscribeToModifier(referencedModifier, indexType);
     }
-    
+
     private Spell FindParentSpell()
     {   // Find parent spell in editor context
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         return UnityEditor.Selection.activeObject as Spell;
-        #else
+#else
         return null;
-        #endif
+#endif
     }
 
     // Store our callbacks as instance fields so we can remove them properly
@@ -152,7 +152,7 @@ public abstract class SpellModifier
     private void SubscribeToModifier(SpellModifier modifier, int whichListenType)
     {   // Subscribe to the events of the referenced modifier for a specific listenType
         if (modifier == null || modifier == this) return;
-        
+
         // Store reference in appropriate field based on listen type
         if (whichListenType == 0)
             _subscribedCastModifier = modifier;
@@ -162,28 +162,35 @@ public abstract class SpellModifier
         // Create event callbacks with appropriate event types
         SpellEventType eventType = whichListenType == 0 ? SpellEventType.OnCast : SpellEventType.OnAction;
         UnityEvent targetEvent = whichListenType == 0 ? onCastEvent : onActionEvent;
-        
+
         // Create a single callback for both events
-        UnityAction callback = () => {
+        UnityAction callback = () =>
+        {
             OnEvent(null, null, eventType);
             targetEvent.Invoke();
         };
-        
+
         // Store callbacks in appropriate fields
-        if (whichListenType == 0) {
+        if (whichListenType == 0)
+        {
             _onCastCallback = callback;
             _onCastEventCallback = callback;
-        } else {
+        }
+        else
+        {
             _onActionCallback = callback;
             _onActionEventCallback = callback;
         }
 
         // Subscribe to the events based on listen type
-        if (whichListenType == 0) {
+        if (whichListenType == 0)
+        {
             _subscribedCastModifier.onCast.AddListener(_onCastCallback);
             _subscribedCastModifier.onCastEvent.AddListener(_onCastEventCallback);
             Debug.Log($"Subscribed to OnCast events of: {_subscribedCastModifier.GetType().Name}");
-        } else {
+        }
+        else
+        {
             _subscribedActionModifier.onAction.AddListener(_onActionCallback);
             _subscribedActionModifier.onActionEvent.AddListener(_onActionEventCallback);
             Debug.Log($"Subscribed to OnAction events of: {_subscribedActionModifier.GetType().Name}");
@@ -206,7 +213,7 @@ public abstract class SpellModifier
         }
 
         // Handle action subscriptions
-        if (_subscribedActionModifier != null) 
+        if (_subscribedActionModifier != null)
         {   // Clean up action event subscriptions
             if (_onActionCallback != null)
                 _subscribedActionModifier.onAction.RemoveListener(_onActionCallback);
@@ -243,6 +250,9 @@ public abstract class SpellModifier
         onCastEvent.Invoke(); // This will trigger any subscribers
     }
 }
+
+
+
 
 
 

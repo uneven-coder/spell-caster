@@ -13,6 +13,8 @@ public class colider : SpellModifier
     public override string CastReferenceLabel => "Event for GameObject Initiator";
     public override bool ShowActionReferenceSelector => false;
 
+    public GameObject _ColideGameObject;
+
 
     public override void OnCast(SpellCaster caster) { }
 
@@ -27,7 +29,11 @@ public class colider : SpellModifier
             return;
 
         var projectileMono = projectileModifier.projectileObject.AddComponent<coliderMono>();
-        projectileMono.Contact += () => OnAction(caster, onAction());
+        projectileMono.Contact += () =>
+        {
+            _ColideGameObject = projectileModifier.projectileObject;
+            OnAction(caster, onAction());
+        };
     }
 
     private new Action onAction() => () =>
@@ -52,6 +58,19 @@ public class coliderMono : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        Contact?.Invoke();
+        if (other.gameObject != gameObject)
+        {
+            Debug.Log($"Collider triggered with: {other.gameObject.name}");
+            Contact?.Invoke();
+        }
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject != gameObject)
+        {
+            Debug.Log($"Collision triggered with: {collision.gameObject.name}");
+            Contact?.Invoke();
+        }
     }
 }

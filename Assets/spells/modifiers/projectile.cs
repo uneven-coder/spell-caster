@@ -20,6 +20,8 @@ public class projectile : SpellModifier
         projectileObject.transform.rotation = spellCaster.caster.player.transform.rotation;
 
         var rb = projectileObject.AddComponent<Rigidbody>();
+        rb.angularDrag = 0.12f;
+        rb.mass = 0.1f;
         rb.velocity = spellCaster.caster.player.transform.forward * speed;
     }
 

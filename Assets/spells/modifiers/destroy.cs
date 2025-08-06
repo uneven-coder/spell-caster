@@ -40,7 +40,7 @@ public class destroy : SpellModifier
 
         if (eventType == SpellEventType.OnCast)
         {
-           _gameObject = GetGameObject();
+           _gameObject = ModifierUtils.GetGameObject(this, SpellEventType.OnCast, typeof(projectile));
             Debug.Log($"OnCast event triggered, game object: {_gameObject?.name}");
         }
 
@@ -52,15 +52,6 @@ public class destroy : SpellModifier
                 OnAction(caster, onAction(_gameObject));
             }
         } 
-    }
-
-    GameObject GetGameObject()
-    {
-        var projectileModifier = _subscribedCastModifier as projectile;
-        if (projectileModifier == null || projectileModifier.projectileObject == null)
-            return null;
-
-         return projectileModifier.projectileObject;
     }
 
     private new Action onAction(GameObject obj) => () =>
