@@ -8,8 +8,9 @@ This ReadMe will also go over thread safe spell management, its important to und
 
 ## Examples and game Showcase
 
-Heres a example showing how the Events work, this is a simple fireball having a projectile with a persistant particle trail and then 2 on colide particle that spawn a blast radius and explosion effect at the hit location.
-The left shows the order of events showing the OnCasts and then arrows signifying the reference type and reference target.
+Heres an example showing how the Events work this is a simple fireball with a projectile that has a persistent particle trail and then two OnCollide particles that spawn a blast radius and explosion effect at the hit location
+The left side shows the order of events with OnCasts listed in sequence and arrows showing the reference type and reference target
+This does show the initialisation order not the actual activation timing but you can usually infer the activation order from it
 <img width="1059" height="596" alt="image" src="https://github.com/user-attachments/assets/e7a6d04f-b9c0-48b4-987c-b93746a1d624" />
 
 
