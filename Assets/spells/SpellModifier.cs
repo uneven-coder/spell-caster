@@ -54,24 +54,14 @@ public abstract class SpellModifier
     public virtual bool ShowCastReferenceSelector => showCastReferenceSelector;
     public virtual bool ShowActionReferenceSelector => showActionReferenceSelector;
 
-    public SpellModifier GetSelectedModifier(Spell currentSpell)
-    {   // Returns the referenced modifier only if valid index is selected
-        if (UseReference && currentSpell != null &&
-            selectedModifierIndex >= 0 &&
-            selectedModifierIndex < currentSpell.modifiers.Count)
-            return currentSpell.modifiers[selectedModifierIndex].modifierInstance;
+    public SpellModifier GetSelectedModifier(Spell currentSpell) => GetModifierAt(selectedModifierIndex, currentSpell);
+    public SpellModifier GetSelectedModifier2(Spell currentSpell) => GetModifierAt(selectedModifierIndex2, currentSpell);
 
-        return null;
-    }
-
-    public SpellModifier GetSelectedModifier2(Spell currentSpell)
-    {   // Returns the referenced modifier only if valid index is selected
-        if (UseReference && currentSpell != null &&
-            selectedModifierIndex2 >= 0 &&
-            selectedModifierIndex2 < currentSpell.modifiers.Count)
-            return currentSpell.modifiers[selectedModifierIndex2].modifierInstance;
-
-        return null;
+    private static bool IsValidIndex(int index, Spell spell) => spell != null && index >= 0 && spell.modifiers != null && index < spell.modifiers.Count;
+    private static SpellModifier GetModifierAt(int index, Spell spell)
+    {
+        if (!IsValidIndex(index, spell)) return null;
+        return spell.modifiers[index].modifierInstance;
     }
 
     [HideInInspector] public UnityEvent onCast = new UnityEvent();
@@ -79,7 +69,8 @@ public abstract class SpellModifier
     [HideInInspector] public UnityEvent onAction = new UnityEvent();
     [HideInInspector] public UnityEvent onActionEvent = new UnityEvent();
 
-    [SerializeField, HideInInspector] public bool _hasRefrence = false;
+    [SerializeField, HideInInspector] public bool _hasRefrence = false; // kept serialized for backward compatibility
+    public bool HasReference => _hasRefrence;
     [System.NonSerialized] public SpellModifier _subscribedCastModifier = null;
     [System.NonSerialized] public SpellModifier _subscribedActionModifier = null;
     [SerializeField, HideInInspector] public int _previousSelectedIndex = -1;
@@ -98,40 +89,29 @@ public abstract class SpellModifier
     // Initialize references - should be called when a spell is loaded
     public void InitializeReferences(Spell parentSpell)
     {   // Setup and validate reference subscriptions
-        if (parentSpell == null)
-            return;
+        if (parentSpell == null) return;
 
-        // Always unsubscribe from references first
         UnsubscribeFromReferences();
         _hasRefrence = false;
         _previousSelectedIndex = selectedModifierIndex;
+        if (!UseReference) return;
 
-        if (!UseReference)
-            return;
-
-        // Process first reference with appropriate listen type
+        // First reference
         if (selectedModifierIndex >= 0)
-            SetupReference(selectedModifierIndex, onCastListenEventType, GetSelectedModifier(parentSpell));
+            SetupReference(selectedModifierIndex, onCastListenEventType, GetModifierAt(selectedModifierIndex, parentSpell));
 
-        // Process second reference with appropriate listen type
+        // Second reference
         if (selectedModifierIndex2 >= 0)
-            SetupReference(selectedModifierIndex2, onActionListenEventType, GetSelectedModifier2(parentSpell));
+            SetupReference(selectedModifierIndex2, onActionListenEventType, GetModifierAt(selectedModifierIndex2, parentSpell));
 
         _hasRefrence = true;
     }
 
-    private bool CheckCircularReference(SpellModifier referencedModifier, int indexType)
-    {   // Always return false - circular reference checking disabled
-        return false;
-    }
+    // Removed unused circular reference checker (was always returning false)
 
     private void SetupReference(int index, int indexType, SpellModifier referencedModifier)
     {   // Process a single reference based on index and type
-        if (referencedModifier == null || referencedModifier == this)
-            return;
-
-        // Subscribe to the referenced modifier with the appropriate listen type
-        // indexType: 0 = OnCast, 1 = OnAction
+        if (index < 0 || referencedModifier == null || referencedModifier == this) return;
         SubscribeToModifier(referencedModifier, indexType);
     }
 
@@ -154,85 +134,61 @@ public abstract class SpellModifier
     {   // Subscribe to the events of the referenced modifier for a specific listenType
         if (modifier == null || modifier == this) return;
 
-        // Store reference in appropriate field based on listen type
-        if (whichListenType == 0)
-        {
-            _subscribedCastModifier = modifier;
-            _hasRefrence = true;
-        }
-        else
-        {
-            _subscribedActionModifier = modifier;
-            _hasRefrence = true;
-        }
+        bool isCast = whichListenType == 0;
+        if (isCast) _subscribedCastModifier = modifier; else _subscribedActionModifier = modifier;
+        _hasRefrence = true;
 
-        // Create event callbacks with appropriate event types
-        SpellEventType eventType = whichListenType == 0 ? SpellEventType.OnCast : SpellEventType.OnAction;
-        UnityEvent targetEvent = whichListenType == 0 ? onCastEvent : onActionEvent;
-
-        // Create a single callback for both events
+        // Single callback handles both OnEvent + local forwarding
         UnityAction callback = () =>
         {
-            OnEvent(null, null, eventType);
-            targetEvent.Invoke();
+            OnEvent(null, null, isCast ? SpellEventType.OnCast : SpellEventType.OnAction);
+            if (isCast) onCastEvent.Invoke(); else onActionEvent.Invoke();
         };
 
-        // Store callbacks in appropriate fields
-        if (whichListenType == 0)
+        if (isCast)
         {
             _onCastCallback = callback;
             _onCastEventCallback = callback;
+            modifier.onCast.AddListener(_onCastCallback);
+            modifier.onCastEvent.AddListener(_onCastEventCallback);
+#if UNITY_EDITOR
+            Debug.Log($"Subscribed to OnCast events of: {modifier.GetType().Name}");
+#endif
         }
         else
         {
             _onActionCallback = callback;
             _onActionEventCallback = callback;
-        }
-
-        // Subscribe to the events based on listen type
-        if (whichListenType == 0)
-        {
-            _subscribedCastModifier.onCast.AddListener(_onCastCallback);
-            _subscribedCastModifier.onCastEvent.AddListener(_onCastEventCallback);
-            Debug.Log($"Subscribed to OnCast events of: {_subscribedCastModifier.GetType().Name}");
-        }
-        else
-        {
-            _subscribedActionModifier.onAction.AddListener(_onActionCallback);
-            _subscribedActionModifier.onActionEvent.AddListener(_onActionEventCallback);
-            Debug.Log($"Subscribed to OnAction events of: {_subscribedActionModifier.GetType().Name}");
+            modifier.onAction.AddListener(_onActionCallback);
+            modifier.onActionEvent.AddListener(_onActionEventCallback);
+#if UNITY_EDITOR
+            Debug.Log($"Subscribed to OnAction events of: {modifier.GetType().Name}");
+#endif
         }
     }
 
     private void UnsubscribeFromReferences()
     {   // Remove any existing subscriptions
-        // Handle cast subscriptions
         if (_subscribedCastModifier != null)
-        {   // Clean up cast event subscriptions
-            if (_onCastCallback != null)
-                _subscribedCastModifier.onCast.RemoveListener(_onCastCallback);
-
-            if (_onCastEventCallback != null)
-                _subscribedCastModifier.onCastEvent.RemoveListener(_onCastEventCallback);
-
+        {
+            if (_onCastCallback != null) _subscribedCastModifier.onCast.RemoveListener(_onCastCallback);
+            if (_onCastEventCallback != null) _subscribedCastModifier.onCastEvent.RemoveListener(_onCastEventCallback);
+#if UNITY_EDITOR
             Debug.Log($"Unsubscribed from cast events of: {_subscribedCastModifier.GetType().Name}");
+#endif
             _subscribedCastModifier = null;
         }
 
-        // Handle action subscriptions
         if (_subscribedActionModifier != null)
-        {   // Clean up action event subscriptions
-            if (_onActionCallback != null)
-                _subscribedActionModifier.onAction.RemoveListener(_onActionCallback);
-
-            if (_onActionEventCallback != null)
-                _subscribedActionModifier.onActionEvent.RemoveListener(_onActionEventCallback);
-
+        {
+            if (_onActionCallback != null) _subscribedActionModifier.onAction.RemoveListener(_onActionCallback);
+            if (_onActionEventCallback != null) _subscribedActionModifier.onActionEvent.RemoveListener(_onActionEventCallback);
+#if UNITY_EDITOR
             Debug.Log($"Unsubscribed from action events of: {_subscribedActionModifier.GetType().Name}");
+#endif
             _subscribedActionModifier = null;
         }
 
-        // Clear all callback references
         _onCastCallback = null;
         _onCastEventCallback = null;
         _onActionCallback = null;
@@ -241,43 +197,34 @@ public abstract class SpellModifier
 
     public virtual void Cast(SpellCaster caster)
     {   // Execute our own OnCast behavior and trigger events
-        // If using references, we've already subscribed to the referenced modifier's events
-
-        // Always execute our own behavior, subscriptions will handle references
         OnCast(caster);
-        onCast.Invoke(); // This will trigger any subscribers
+        onCast.Invoke();
     }
 
     public void ProcessEvent(SpellCaster caster, UnityEvent spellEvent)
     {   // Execute our own OnEvent behavior and trigger events
-        // If using references, we've already subscribed to the referenced modifier's events
-
-        // Always execute our own behavior, subscriptions will handle references
-        OnEvent(caster, spellEvent, SpellEventType.OnCast);
-        onCastEvent.Invoke(); // This will trigger any subscribers
+        OnEvent(caster, spellEvent, SpellEventType.OnCast); // Keep original behavior
+        onCastEvent.Invoke();
     }
 
     public virtual string GetDebugInfo(Spell parentSpell)
     {   // Returns debug information about this modifier for visualization
         string typeName = GetType().Name;
         string info = typeName;
-        
-        // Add reference information if using references
+
         if (UseReference && parentSpell != null)
         {
-            if (selectedModifierIndex >= 0 && selectedModifierIndex < parentSpell.modifiers.Count)
+            if (IsValidIndex(selectedModifierIndex, parentSpell))
             {
                 string refType = onCastListenEventType == 0 ? "OnCast" : "OnAction";
                 info += $"\n→ References [{refType}]: {parentSpell.modifiers[selectedModifierIndex].ModifierTypeName}";
             }
-            
-            if (selectedModifierIndex2 >= 0 && selectedModifierIndex2 < parentSpell.modifiers.Count)
+            if (IsValidIndex(selectedModifierIndex2, parentSpell))
             {
                 string refType = onActionListenEventType == 0 ? "OnCast" : "OnAction";
                 info += $"\n→ References [{refType}]: {parentSpell.modifiers[selectedModifierIndex2].ModifierTypeName}";
             }
         }
-        
         return info;
     }
 }
